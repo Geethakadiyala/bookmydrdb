@@ -1,0 +1,41 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "bookmydr"
+  namespace: "default"
+  labels:
+    app: "bookmydr"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: "bookmydr"
+  template:
+    metadata:
+      labels:
+        app: "bookmydr"
+    spec:
+      containers:
+      - name: "bookmydrdb-sha256-1"
+        image: "gcr.io/gcpdemo-334906/github.com/geethakadiyala/bookmydrdb@sha256:f93731a7179cb8d9ae083c624f198950cb8c3122c92df40aa650503af0238fcd"
+---
+apiVersion: "autoscaling/v2beta1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "bookmydr-hpa-l79w"
+  namespace: "default"
+  labels:
+    app: "bookmydr"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "bookmydr"
+    apiVersion: "apps/v1"                             
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: "Resource"                                    
+    resource:
+      name: "cpu"
+      targetAverageUtilization: 80
